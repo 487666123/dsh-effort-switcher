@@ -6,7 +6,7 @@ window.__ModuleLoader__.load({
         const react = require("react");
 
         const name = "effort-switcher";
-        const inject = ["slots", "modelDirectories", "sessions"];
+        const inject = ["slots", "modelDirectories", "sessions", "remote.session"];
         const slotName = "conversation.input.model";
 
         const css = `
