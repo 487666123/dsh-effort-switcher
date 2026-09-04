@@ -254,6 +254,7 @@ window.__ModuleLoader__.load({
 }
 .dsh-es-sliderHead {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
@@ -323,7 +324,7 @@ window.__ModuleLoader__.load({
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.5);
     background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 .dsh-es-sliderTicks {
