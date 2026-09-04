@@ -342,10 +342,10 @@ window.__ModuleLoader__.load({
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: rgb(255 255 255 / 38%);
+    background: rgb(0 0 0 / 15%);
 }
 .dsh-es-sliderTickActive {
-    background: rgb(255 255 255 / 38%);
+    background: rgb(255 255 255 / 50%);
 }
 .dsh-es-slider {
     -webkit-appearance: none;
@@ -709,13 +709,10 @@ window.__ModuleLoader__.load({
             const knobLeft = atMax || levels.length <= 1
                 ? `calc(100% - ${thumbRadius}px)`
                 : fillPct <= 0
-                    ? `${thumbRadius}px`
-                    : travel;
+                    ? `${thumbRadius}px` : travel;
             // Fill always ends at the knob center; at max that is
             // calc(100% - 15px), never 100%, so no color bleeds past the knob.
-            const fillWidth = fillPct <= 0
-                ? "0px"
-                : travel;
+            const fillWidth = travel;
 
             const slider = currentChoice !== undefined && levels.length > 0
                 ? react.createElement(
