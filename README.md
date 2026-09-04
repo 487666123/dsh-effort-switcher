@@ -1,13 +1,17 @@
-# DSH Effort Switcher
+# DSH Effort Switcher (Enhanced)
+
+DSH Web 推理强度滑动条插件的增强版本，优化了滑块视觉反馈和档位指示器对比度。
 
 将 DSH Web 聊天输入区原有的模型/推理强度选择入口替换为推理强度滑动条。滑块会调用 DSH 的 `modelDirectories` 服务提交当前模型的 `reasoningEffort`，因此设置会作用于后续请求。
 
+## 增强特性
+
+- **改进的填充条视觉连续性**：彩色填充条在所有档位都延伸到滑块圆心，最低档位也保持 15px 可见宽度
+- **优化的档位指示器对比度**：未激活档位使用深色半透明，已激活档位使用更亮的白色，提升可读性
+
 ## 屏幕截图
 
-![](screenshots/1.png)
-
-
-![](screenshots/2.png)
+![](screenshots/3.png)
 
 ## 要求
 
@@ -17,7 +21,7 @@
 ## 安装
 
 ```powershell
-dsh plugin --profile web add github:lemonorangeapple/dsh-effort-switcher
+dsh plugin --profile web add github:487666123/dsh-effort-switcher
 ```
 
 命令会把本包装进当前 Web profile，并因 `dsh.bundle` 声明自动写入 `dsh.profile.bundles`。不必再编辑 profile 的 `cordis.patch.yml`。
@@ -25,6 +29,10 @@ dsh plugin --profile web add github:lemonorangeapple/dsh-effort-switcher
 完全停止并重新启动 `dsh web`，然后刷新 `http://127.0.0.1:3080`。DSH 仅在 Web 进程启动时扫描 `dsh.client` 元数据；仅刷新旧页面或运行独立开发服务器不会加载本插件。
 
 如果 profile 的 `cordis.patch.yml` 里还留着旧的手工挂载（`id: effort-switcher`），先删掉，避免双重挂载。
+
+## 原始项目
+
+本项目基于 [lemonorangeapple/dsh-effort-switcher](https://github.com/lemonorangeapple/dsh-effort-switcher) 修改。
 
 ## 卸载
 
