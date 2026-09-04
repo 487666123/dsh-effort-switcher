@@ -293,14 +293,14 @@ window.__ModuleLoader__.load({
     z-index: 1;
     overflow: hidden;
     background: #4c8dff;
-    transition: width .315s ease;
+    transition: width .25s ease;
 }
 .dsh-es-sliderBloom {
     position: absolute;
     inset: 0;
     background: linear-gradient(90deg, #4c8dff 0%, #7b6cff 52%, #b56bff 100%);
     opacity: 0;
-    transition: opacity .315s ease;
+    transition: opacity .25s ease;
 }
 .dsh-es-sliderFillMax .dsh-es-sliderBloom {
     opacity: 1;
@@ -314,7 +314,7 @@ window.__ModuleLoader__.load({
     margin-left: -15px;
     pointer-events: none;
     transform: translateY(-50%);
-    transition: left .315s ease;
+    transition: left .25s ease;
 }
 .dsh-es-sliderKnobFace {
     box-sizing: border-box;
