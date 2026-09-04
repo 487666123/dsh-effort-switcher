@@ -5,6 +5,7 @@ window.__ModuleLoader__.load({
         const exports = module.exports;
         const react = require("react");
 
+        // 插件元数据：名称、依赖项和插槽注册目标
         const name = "effort-switcher";
         const inject = ["slots", "modelDirectories", "sessions", "remote.session"];
         const slotName = "conversation.input.model";
@@ -316,11 +317,14 @@ window.__ModuleLoader__.load({
     transition: left .315s ease;
 }
 .dsh-es-sliderKnobFace {
+    box-sizing: border-box;
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: #ffffff;
-    box-shadow: none;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 .dsh-es-sliderTicks {
     position: absolute;
@@ -897,7 +901,7 @@ window.__ModuleLoader__.load({
                             available,
                             directory: directory.store,
                             load: () => {
-                                if (available) return directory.load().catch(() => {});
+                                if (available) return directory.load().catch(() => { });
                                 return Promise.resolve();
                             },
                             select: (selection) => available ? directory.select(selection).then(() => true, () => false) : Promise.resolve(false)
