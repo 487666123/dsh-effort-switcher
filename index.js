@@ -11,6 +11,10 @@ window.__ModuleLoader__.load({
         const slotName = "conversation.input.model";
 
         const css = `
+code {
+    font-size: 14px !important;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", "HarmonyOS Sans SC" !important;
+}
 .dsh-es-root {
     min-width: 0;
     position: relative;
