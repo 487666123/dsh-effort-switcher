@@ -66,10 +66,22 @@ code {
 .dsh-es-chevronOpen {
     transform: rotate(180deg);
 }
+/* Keep panel blur on a sibling layer so the knob can sample the rail. */
+.dsh-es-menu::before, .dsh-es-modelMenu::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--dsw-specific-menu);
+    background: color-mix(in srgb, var(--dsw-specific-menu) 80%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+}
 .dsh-es-menu {
     z-index: 9999;
     border: 1px solid var(--dsw-alias-border-inverted);
-    background: var(--dsw-specific-menu);
     width: min(240px, calc(100vw - 32px));
     max-height: min(380px, calc(100vh - 96px));
     box-shadow: var(--dsw-shadow-lv3);
@@ -137,7 +149,6 @@ code {
 .dsh-es-modelMenu {
     z-index: 10000;
     border: 1px solid var(--dsw-alias-border-inverted);
-    background: var(--dsw-specific-menu);
     width: min(220px, calc(100vw - 32px));
     max-height: min(240px, calc(100vh - 96px));
     box-shadow: var(--dsw-shadow-lv3);
@@ -418,11 +429,9 @@ code {
 }
 @keyframes dsh-es-pop {
     from {
-        opacity: 0;
         transform: translateY(6px) scale(.98);
     }
     to {
-        opacity: 1;
         transform: translateY(0) scale(1);
     }
 }
