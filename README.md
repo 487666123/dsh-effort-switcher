@@ -11,7 +11,7 @@ DSH Web 推理强度滑动条插件的增强版本，优化了滑块视觉反馈
 
 ## 屏幕截图
 
-![](screenshots/3.png)
+![](screenshots/4.gif)
 
 ## 要求
 
