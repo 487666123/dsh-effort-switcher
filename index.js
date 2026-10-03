@@ -66,22 +66,10 @@ code {
 .dsh-es-chevronOpen {
     transform: rotate(180deg);
 }
-/* Keep panel blur on a sibling layer so the knob can sample the rail. */
-.dsh-es-menu::before, .dsh-es-modelMenu::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--dsw-specific-menu);
-    background: color-mix(in srgb, var(--dsw-specific-menu) 80%, transparent);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    pointer-events: none;
-}
 .dsh-es-menu {
     z-index: 9999;
     border: 1px solid var(--dsw-alias-border-inverted);
+    background: Canvas;
     width: min(240px, calc(100vw - 32px));
     max-height: min(380px, calc(100vh - 96px));
     box-shadow: var(--dsw-shadow-lv3);
@@ -149,6 +137,7 @@ code {
 .dsh-es-modelMenu {
     z-index: 10000;
     border: 1px solid var(--dsw-alias-border-inverted);
+    background: Canvas;
     width: min(220px, calc(100vw - 32px));
     max-height: min(240px, calc(100vh - 96px));
     box-shadow: var(--dsw-shadow-lv3);
@@ -223,7 +212,7 @@ code {
     padding: 5px 6px;
     border: 1px solid var(--dsw-alias-border-inverted);
     border-radius: 6px;
-    background: var(--dsw-specific-menu);
+    background: Canvas;
     box-shadow: var(--dsw-shadow-lv3);
     color: var(--dsw-alias-label-primary);
     font-size: 11px;
@@ -286,12 +275,46 @@ code {
     height: 26px;
     margin: 8px 0 10px;
 }
+.dsh-es-sliderRail::before {
+    content: "";
+    position: absolute;
+    inset: 2px 0;
+    border: 1px solid rgb(116 190 255 / 18%);
+    border-radius: 13px;
+    box-shadow: 0 0 10px rgb(72 153 255 / 22%);
+    opacity: var(--slider-rail-glow, .28);
+    pointer-events: none;
+}
 .dsh-es-sliderGroove {
     position: absolute;
     inset: 0;
     overflow: hidden;
     border-radius: 13px;
     pointer-events: none;
+}
+.dsh-es-sliderGroove::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background:
+        repeating-linear-gradient(90deg, rgb(255 255 255 / 10%) 0 1px, transparent 1px 12px),
+        repeating-linear-gradient(0deg, transparent 0 5px, rgb(255 255 255 / 7%) 5px 6px, transparent 6px 12px);
+    background-size: 24px 100%, 100% 12px;
+    opacity: .48;
+    mix-blend-mode: screen;
+    animation: dsh-es-tech-grid 4.8s linear infinite;
+}
+.dsh-es-sliderGroove::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0 30%, rgb(199 242 255 / 34%) 46%, rgb(255 255 255 / 52%) 50%, transparent 67%);
+    background-size: 190% 100%;
+    opacity: var(--slider-scan-opacity, 0);
+    mix-blend-mode: screen;
+    animation: dsh-es-track-scan 3.2s ease-in-out infinite;
 }
 .dsh-es-sliderTrack, .dsh-es-sliderFill {
     position: absolute;
@@ -302,24 +325,288 @@ code {
     pointer-events: none;
 }
 .dsh-es-sliderTrack {
+    z-index: 0;
     right: 0;
-    background: var(--dsw-alias-interactive-bg-hover);
+    background:
+        linear-gradient(180deg, rgb(255 255 255 / 8%), transparent 46%, rgb(0 0 0 / 9%)),
+        var(--dsw-alias-interactive-bg-hover);
 }
 .dsh-es-sliderFill {
     z-index: 1;
     overflow: hidden;
     background: #4c8dff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), 0 0 8px rgb(76 141 255 / 26%);
     transition: width .25s ease;
+}
+.dsh-es-sliderFill::before {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    top: -5px;
+    right: -8px;
+    bottom: -5px;
+    width: 22px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 70% 50%, rgb(255 255 255 / 92%) 0 4%, rgb(144 231 255 / 72%) 18%, rgb(70 164 255 / 24%) 48%, transparent 72%);
+    filter: blur(.2px);
+    opacity: var(--fill-core-opacity, .26);
+    animation: dsh-es-fill-core 1.8s ease-in-out infinite;
+}
+.dsh-es-sliderFill::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: 1px;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0 18%, rgb(190 235 255 / 34%) 42%, rgb(255 255 255 / 74%) 74%, transparent);
+    opacity: var(--fill-edge-opacity, .3);
+    box-shadow: 0 0 4px rgb(135 218 255 / 55%);
 }
 .dsh-es-sliderBloom {
     position: absolute;
+    z-index: 0;
     inset: 0;
-    background: linear-gradient(90deg, #4c8dff 0%, #7b6cff 52%, #b56bff 100%);
+    background:
+        linear-gradient(180deg, rgb(255 255 255 / 16%), transparent 42%, rgb(24 48 136 / 16%)),
+        linear-gradient(90deg, #36a6ff 0%, #4c8dff 30%, #716dff 58%, #b56bff 100%);
+    background-size: 100% 100%, 190% 100%;
+    background-position: 0 0, 0% 50%;
     opacity: 0;
     transition: opacity .25s ease;
 }
+.dsh-es-sliderBloom::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(115deg, transparent 0 12px, rgb(255 255 255 / 17%) 12px 13px, transparent 13px 25px);
+    background-size: 58px 100%;
+    opacity: .46;
+    animation: dsh-es-energy-stream 2.4s linear infinite;
+}
+.dsh-es-sliderBloom::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(220 249 255 / 80%) 42%, rgb(255 255 255 / 75%) 70%, transparent);
+    opacity: .6;
+    box-shadow: 0 0 5px rgb(159 224 255 / 70%);
+}
 .dsh-es-sliderFillMax .dsh-es-sliderBloom {
     opacity: 1;
+}
+.dsh-es-sliderFillPeak .dsh-es-sliderBloom {
+    background-position: 0 0, 100% 50%;
+    animation: dsh-es-cosmic-flow 4s ease-in-out infinite alternate;
+}
+.dsh-es-sliderFillPeak .dsh-es-sliderBloom::before {
+    opacity: .72;
+    animation-duration: 1.55s;
+}
+.dsh-es-sliderStars {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+.dsh-es-sliderStarsPeak::before {
+    content: "";
+    position: absolute;
+    inset: -45% -65%;
+    background: linear-gradient(110deg, transparent 32%, rgb(146 246 255 / 22%) 40%, rgb(255 255 255 / 25%) 43%, transparent 49%, rgb(255 232 190 / 18%) 64%, transparent 70%);
+    animation: dsh-es-aurora 2.8s ease-in-out infinite alternate;
+}
+.dsh-es-sliderStarsPeak::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 28%), inset 0 0 7px rgb(222 240 255 / 18%);
+}
+.dsh-es-sliderStar {
+    position: absolute;
+    left: var(--star-x);
+    top: var(--star-y);
+    width: var(--star-size);
+    height: var(--star-size);
+    background: var(--star-color, #fff);
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    opacity: var(--star-alpha);
+    filter: drop-shadow(0 0 2px var(--star-color, #fff));
+    transform: translate(-50%, -50%);
+    animation: dsh-es-star-twinkle var(--star-duration) ease-in-out var(--star-delay) infinite;
+}
+.dsh-es-sliderStar:nth-child(3n) {
+    animation-name: dsh-es-star-drift;
+}
+.dsh-es-sliderMeteor {
+    position: absolute;
+    left: calc(var(--meteor-x) - var(--meteor-length));
+    top: var(--meteor-y);
+    width: var(--meteor-length);
+    height: 1px;
+    transform-origin: right center;
+    background: linear-gradient(90deg, transparent, rgb(119 216 255 / 72%) 52%, #fff);
+    box-shadow: 0 0 4px rgb(216 245 255 / 50%), 0 0 9px rgb(109 198 255 / 35%);
+    opacity: 0;
+    animation: dsh-es-meteor var(--meteor-duration) linear var(--meteor-delay) infinite;
+}
+.dsh-es-sliderMeteor::before {
+    content: "";
+    position: absolute;
+    inset: -3px 0;
+    background: inherit;
+    filter: blur(2px);
+    opacity: .5;
+}
+.dsh-es-sliderMeteor::after {
+    content: "";
+    position: absolute;
+    right: -2px;
+    top: -1.5px;
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    box-shadow: 0 0 5px #fff, 0 0 9px rgb(113 219 255 / 70%);
+    clip-path: polygon(50% 0, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0 50%, 35% 35%);
+}
+.dsh-es-sliderBurst {
+    position: absolute;
+    left: 68%;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+    animation: dsh-es-star-burst .75s ease-out both;
+}
+@keyframes dsh-es-tech-grid {
+    from { background-position: 0 0, 0 0; }
+    to { background-position: 24px 0, 0 12px; }
+}
+@keyframes dsh-es-track-scan {
+    0%, 18% { background-position: 160% 50%; }
+    58%, 78% { background-position: -50% 50%; }
+    100% { background-position: -50% 50%; }
+}
+@keyframes dsh-es-energy-stream {
+    from { background-position: 0 0; }
+    to { background-position: 58px 0; }
+}
+@keyframes dsh-es-fill-core {
+    0%, 100% { opacity: calc(var(--fill-core-opacity, .26) * .62); transform: scaleX(.78); }
+    50% { opacity: var(--fill-core-opacity, .26); transform: scaleX(1.16); }
+}
+@keyframes dsh-es-knob-ring {
+    0%, 100% { transform: scale(.88); opacity: calc(var(--knob-ring-opacity, .3) * .72); }
+    50% { transform: scale(1.08); opacity: var(--knob-ring-opacity, .3); }
+}
+@keyframes dsh-es-knob-orbit {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}
+@keyframes dsh-es-knob-scan {
+    0%, 100% { transform: translateX(-52%); }
+    50% { transform: translateX(48%); }
+}
+@keyframes dsh-es-knob-core {
+    0%, 100% { transform: translate(-50%, -50%) scale(.7); }
+    50% { transform: translate(-50%, -50%) scale(1.35); }
+}
+@keyframes dsh-es-tick-pulse {
+    0%, 100% { transform: scale(.72); opacity: .62; }
+    45% { transform: scale(1.2); opacity: 1; }
+}
+@keyframes dsh-es-star-twinkle {
+    0%, 100% {
+        opacity: calc(var(--star-alpha) * .5);
+        transform: translate(-50%, -50%) scale(.65) rotate(0);
+    }
+    45% {
+        opacity: var(--star-alpha);
+        transform: translate(-50%, -50%) scale(1.2) rotate(18deg);
+    }
+    70% {
+        opacity: calc(var(--star-alpha) * .6);
+        transform: translate(-50%, -50%) scale(.85) rotate(8deg);
+    }
+}
+@keyframes dsh-es-star-drift {
+    0%, 100% {
+        opacity: calc(var(--star-alpha) * .42);
+        transform: translate(-50%, -50%) scale(.72) rotate(-12deg);
+    }
+    50% {
+        opacity: var(--star-alpha);
+        transform: translate(calc(-50% + 2px), calc(-50% - 1px)) scale(1.16) rotate(22deg);
+    }
+}
+/* Move on the rotated local X axis to keep the trajectory aligned with the tail. */
+@keyframes dsh-es-meteor {
+    0% {
+        opacity: 0;
+        transform: rotate(var(--meteor-angle)) translateX(0);
+    }
+    8%, 42% {
+        opacity: var(--meteor-alpha);
+    }
+    58%, 100% {
+        opacity: 0;
+        transform: rotate(var(--meteor-angle)) translateX(var(--meteor-distance));
+    }
+}
+@keyframes dsh-es-cosmic-flow {
+    from { background-position: 0% 50%; }
+    to { background-position: 100% 50%; }
+}
+@keyframes dsh-es-aurora {
+    from { transform: translateX(-18%) rotate(-5deg); }
+    to { transform: translateX(18%) rotate(-5deg); }
+}
+@keyframes dsh-es-star-burst {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.2) rotate(0);
+    }
+    25% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.4) rotate(20deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.5) rotate(45deg);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .dsh-es-sliderStar,
+    .dsh-es-sliderStar:nth-child(3n),
+    .dsh-es-sliderFillPeak .dsh-es-sliderBloom,
+    .dsh-es-sliderBloom::before,
+    .dsh-es-sliderGroove::before,
+    .dsh-es-sliderGroove::after,
+    .dsh-es-sliderFill::before,
+    .dsh-es-sliderKnob::before,
+    .dsh-es-sliderKnob::after,
+    .dsh-es-sliderKnobFace::before,
+    .dsh-es-sliderKnobFace::after,
+    .dsh-es-sliderTickActive,
+    .dsh-es-sliderStarsPeak::before,
+    .dsh-es-sliderRail::before {
+        animation: none;
+    }
+    .dsh-es-sliderRail::before {
+        opacity: .28;
+    }
+    .dsh-es-sliderMeteor, .dsh-es-sliderBurst {
+        display: none;
+        animation: none;
+    }
 }
 .dsh-es-sliderKnob {
     position: absolute;
@@ -332,15 +619,68 @@ code {
     transform: translateY(-50%);
     transition: left .25s ease;
 }
+.dsh-es-sliderKnob::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 1px solid rgb(119 214 255 / 54%);
+    border-radius: 50%;
+    opacity: var(--knob-ring-opacity, .3);
+    box-shadow: 0 0 6px rgb(82 183 255 / 46%), inset 0 0 5px rgb(152 222 255 / 28%);
+    animation: dsh-es-knob-ring 2.2s ease-in-out infinite;
+}
+.dsh-es-sliderKnob::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border: 1px dashed rgb(167 226 255 / 38%);
+    border-radius: 50%;
+    opacity: var(--knob-ring-opacity, .3);
+    animation: dsh-es-knob-orbit 6s linear infinite;
+}
+.dsh-es-sliderKnobPeak::before {
+    border-color: rgb(228 191 255 / 76%);
+    box-shadow: 0 0 8px rgb(118 215 255 / 68%), 0 0 16px rgb(180 112 255 / 36%), inset 0 0 6px rgb(255 255 255 / 30%);
+    animation-duration: 1.4s;
+}
+.dsh-es-sliderKnobPeak::after {
+    border-color: rgb(232 191 255 / 52%);
+    animation-duration: 3.6s;
+}
 .dsh-es-sliderKnobFace {
+    position: relative;
+    z-index: 1;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(12px);
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.62);
+    background: Canvas;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2), 0 0 8px rgb(98 196 255 / 38%), inset 0 0 7px rgb(255 255 255 / 28%);
+}
+.dsh-es-sliderKnobFace::before {
+    content: "";
+    position: absolute;
+    inset: -70% 18%;
+    background: linear-gradient(108deg, transparent 38%, rgb(214 249 255 / 62%) 48%, transparent 58%);
+    opacity: var(--knob-energy, .16);
+    transform: translateX(-42%);
+    animation: dsh-es-knob-scan 2.7s ease-in-out infinite;
+}
+.dsh-es-sliderKnobFace::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--knob-core-size, 3px);
+    height: var(--knob-core-size, 3px);
+    border-radius: 50%;
+    background: #e9fbff;
+    box-shadow: 0 0 4px #fff, 0 0 9px rgb(85 202 255 / 88%), 0 0 14px rgb(163 112 255 / 52%);
+    opacity: var(--knob-energy, .22);
+    transform: translate(-50%, -50%);
+    animation: dsh-es-knob-core 1.7s ease-in-out infinite;
 }
 .dsh-es-sliderTicks {
     position: absolute;
@@ -357,11 +697,16 @@ code {
 .dsh-es-sliderTick {
     width: 4px;
     height: 4px;
+    border: 1px solid rgb(170 218 255 / 28%);
     border-radius: 50%;
     background: rgb(0 0 0 / 15%);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 8%);
 }
 .dsh-es-sliderTickActive {
-    background: rgb(255 255 255 / 50%);
+    background: rgb(220 249 255 / 92%);
+    border-color: rgb(255 255 255 / 76%);
+    box-shadow: 0 0 4px rgb(116 213 255 / 86%), 0 0 8px rgb(127 148 255 / 38%);
+    animation: dsh-es-tick-pulse 2.3s ease-in-out var(--tick-delay, 0s) infinite;
 }
 .dsh-es-slider {
     -webkit-appearance: none;
@@ -447,6 +792,41 @@ code {
             tag.textContent = css;
             document.head.appendChild(tag);
         }
+
+        const STAR_POINTS = [
+            [5, 30, 3, 3.2, -1.1],
+            [32, 82, 3, 2.9, -1.6],
+            [59, 78, 4, 4.2, -2.5],
+            [87, 28, 5, 3.3, -2.1],
+            [19, 18, 3, 4.1, -.7],
+            [45, 64, 3, 3.4, -.9],
+            [73, 56, 5, 2.7, -.4],
+            [94, 65, 3, 3.9, -1.7],
+            [12, 72, 5, 2.8, -2.2],
+            [38, 25, 4, 4.3, -3.1],
+            [66, 19, 3, 3.7, -1.3],
+            [80, 80, 3, 4.4, -3.5],
+            [25, 55, 6, 3.6, -2.8],
+            [52, 35, 6, 3.1, -1.9],
+            [8, 58, 3, 3.5, -.8],
+            [22, 83, 3, 2.6, -1.8],
+            [29, 20, 4, 3.8, -2.4],
+            [42, 84, 3, 3.1, -1.4],
+            [48, 17, 3, 4.1, -3.2],
+            [61, 43, 5, 2.9, -.6],
+            [70, 83, 3, 3.6, -2.6],
+            [77, 22, 4, 3.3, -1.2],
+            [85, 61, 3, 4.2, -3.4],
+            [91, 16, 4, 2.8, -2.0]
+        ];
+        const METEOR_POINTS = [
+            [12, -6, 1.8, .15],
+            [58, -8, 2.3, .62],
+            [34, -5, 2.0, .38],
+            [78, -7, 2.5, .83],
+            [23, -9, 1.9, .95],
+            [65, -4, 2.2, .46]
+        ];
 
         function effortIndex(levels, current) {
             const index = levels.findIndex((level) => level.id === current);
@@ -718,6 +1098,10 @@ code {
             const maxIndex = levels.length - 1;
             const fillPct = levels.length <= 1 ? 100 : Math.round((displayedIndex / maxIndex) * 100);
             const atMax = displayedIndex >= levels.length - 1;
+            const effectIntensity = levels.length > 1 ? Math.max(0, Math.min(1, displayedIndex / maxIndex)) : 0;
+            const peakActive = atMax && effectIntensity > 0;
+            const starCount = effectIntensity > 0 ? atMax ? STAR_POINTS.length : Math.round(5 + effectIntensity * 12) : 0;
+            const meteorCount = effectIntensity > 0 ? atMax ? METEOR_POINTS.length : Math.max(1, Math.round(effectIntensity * 3)) : 0;
             const thumbRadius = 15;
             const travel = `calc(${fillPct}% + ${Math.round(thumbRadius - (thumbRadius * 2 * fillPct) / 100)}px)`;
             const knobLeft = atMax || levels.length <= 1
@@ -740,22 +1124,78 @@ code {
                     ),
                     react.createElement(
                         "div",
-                        { className: "dsh-es-sliderRail" },
+                        { className: "dsh-es-sliderRail", style: {
+                             "--slider-rail-glow": (.18 + effectIntensity * .36 + (peakActive ? .16 : 0)).toFixed(2),
+                             "--slider-scan-opacity": effectIntensity > 0 ? (.12 + effectIntensity * .34).toFixed(2) : ".04"
+                         } },
                         react.createElement(
                             "div",
                             { className: "dsh-es-sliderGroove", "aria-hidden": true },
                             react.createElement("div", { className: "dsh-es-sliderTrack" }),
                             react.createElement("div", {
-                                className: atMax ? "dsh-es-sliderFill dsh-es-sliderFillMax" : "dsh-es-sliderFill",
-                                style: { width: fillWidth }
-                            }, react.createElement("div", { className: "dsh-es-sliderBloom" }))
+                                className: atMax
+                                    ? `dsh-es-sliderFill dsh-es-sliderFillMax${effectIntensity > 0 ? " dsh-es-sliderFillPeak" : ""}`
+                                    : "dsh-es-sliderFill",
+                                style: {
+                                     width: fillWidth,
+                                     "--fill-core-opacity": (.1 + effectIntensity * .64 + (peakActive ? .14 : 0)).toFixed(2),
+                                     "--fill-edge-opacity": (.12 + effectIntensity * .48 + (peakActive ? .12 : 0)).toFixed(2)
+                                 }
+                            },
+                                react.createElement("div", { className: "dsh-es-sliderBloom" }),
+                                starCount > 0
+                                    ? react.createElement(
+                                        "div",
+                                        {
+                                            className: atMax ? "dsh-es-sliderStars dsh-es-sliderStarsPeak" : "dsh-es-sliderStars",
+                                            "aria-hidden": true
+                                        },
+                                        STAR_POINTS.slice(0, starCount).map(([x, y, size, duration, delay], index) => react.createElement("span", {
+                                            key: index,
+                                            className: "dsh-es-sliderStar",
+                                            style: {
+                                                "--star-x": `${x}%`,
+                                                "--star-y": `${y}%`,
+                                                "--star-size": `${(size * (atMax ? 1.2 : .85 + effectIntensity * .3)).toFixed(2)}px`,
+                                                "--star-alpha": (.35 + effectIntensity * .5 + (atMax ? .15 : 0)).toFixed(2),
+                                                "--star-duration": `${(duration * (1.15 - effectIntensity * .3)).toFixed(2)}s`,
+                                                "--star-delay": `${delay}s`,
+                                                "--star-color": ["#fff", "#d8f5ff", "#fff2c6"][index % 3]
+                                            }
+                                        })),
+                                        METEOR_POINTS.slice(0, meteorCount).map(([x, y, period, phase], index) => {
+                                            const duration = period * (atMax ? .85 : 1.8 - effectIntensity * .5);
+                                            return react.createElement("span", {
+                                                key: `meteor-${index}`,
+                                                className: "dsh-es-sliderMeteor",
+                                                style: {
+                                                    "--meteor-x": `${x}%`,
+                                                    "--meteor-y": `${y}px`,
+                                                    "--meteor-angle": "28deg",
+                                                    "--meteor-distance": "72px",
+                                                    "--meteor-length": `${atMax ? 36 + (index % 2) * 6 : 20 + effectIntensity * 12}px`,
+                                                    "--meteor-alpha": atMax ? ".95" : (.35 + effectIntensity * .45).toFixed(2),
+                                                    "--meteor-duration": `${duration.toFixed(2)}s`,
+                                                    "--meteor-delay": `${(-phase * duration).toFixed(2)}s`
+                                                }
+                                            });
+                                        }),
+                                        atMax ? react.createElement("span", { className: "dsh-es-sliderBurst" }) : null
+                                    )
+                                    : null
+                            )
                         ),
                         react.createElement(
                             "div",
                             {
-                                className: "dsh-es-sliderKnob",
+                                className: peakActive ? "dsh-es-sliderKnob dsh-es-sliderKnobPeak" : "dsh-es-sliderKnob",
                                 "aria-hidden": true,
-                                style: { left: knobLeft }
+                                style: {
+                                     left: knobLeft,
+                                     "--knob-ring-opacity": (.12 + effectIntensity * .48 + (peakActive ? .16 : 0)).toFixed(2),
+                                     "--knob-energy": (.12 + effectIntensity * .62 + (peakActive ? .14 : 0)).toFixed(2),
+                                     "--knob-core-size": `${(2.5 + effectIntensity * 2 + (peakActive ? 1 : 0)).toFixed(1)}px`
+                                 }
                             },
                             react.createElement("div", { className: "dsh-es-sliderKnobFace" })
                         ),
@@ -764,7 +1204,8 @@ code {
                             { className: "dsh-es-sliderTicks", "aria-hidden": true },
                             levels.map((level, index) => react.createElement("span", {
                                 key: level.id,
-                                className: index <= displayedIndex ? "dsh-es-sliderTick dsh-es-sliderTickActive" : "dsh-es-sliderTick"
+                                className: index <= displayedIndex ? "dsh-es-sliderTick dsh-es-sliderTickActive" : "dsh-es-sliderTick",
+                                 style: { "--tick-delay": `${(-index * .16).toFixed(2)}s` }
                             }))
                         ),
                         react.createElement("input", {
@@ -832,7 +1273,7 @@ code {
                     : react.createElement(
                         react.Fragment,
                         null,
-                        react.createElement("div", { className: "dsh-es-menuDivider" }),
+                                                 react.createElement("div", { className: "dsh-es-menuDivider" }),
                         slider
                     )
             ) : null;
