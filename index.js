@@ -927,6 +927,9 @@ code {
             const [initialLoading, setInitialLoading] = react.useState(true);
             const [draft, setDraft] = react.useState(-1);
             const [pendingIndex, setPendingIndex] = react.useState(-1);
+            const queuedEffortIndexRef = react.useRef([]);
+            const effortActiveIndexRef = react.useRef(null);
+            const effortSubmittingRef = react.useRef(false);
             const [panelHeight, setPanelHeight] = react.useState(0);
             const rootRef = react.useRef(null);
             const triggerRef = react.useRef(null);
@@ -1034,31 +1037,71 @@ code {
                 });
             };
 
-            const updateDraft = (event) => {
-                setDraft(Number(event.currentTarget.value));
-            };
+            // Commit each distinct level during movement, in FIFO order.
+            const drainEffortQueue = () => {
+                if (effortSubmittingRef.current) return;
+                const queue = queuedEffortIndexRef.current;
+                if (queue.length === 0) return;
 
-            // CSS hover on .dsh-es-sliderRail now handles knob scaling.
-
-            // Commit the live thumb value on release. Keep the local pin until
-            // the store catches up so the knob does not snap back.
-            const commitEffort = (event) => {
-                const nextIndex = Number(event?.currentTarget?.value ?? draft);
-                if (!Number.isFinite(nextIndex) || nextIndex < 0 || busy) return;
+                const nextIndex = queue.shift();
                 const nextEffort = levels[nextIndex]?.id;
-                if (nextEffort === undefined || nextEffort === currentEffort) {
+                if (nextEffort === undefined) {
+                    queue.length = 0;
                     setDraft(-1);
                     setPendingIndex(-1);
                     return;
                 }
-                setDraft(nextIndex);
-                setPendingIndex(nextIndex);
+
+                effortActiveIndexRef.current = nextIndex;
+                effortSubmittingRef.current = true;
                 select({
                     provider: state.current.provider,
                     model: state.current.model,
                     reasoningEffort: nextEffort
+                }).then((accepted) => {
+                    effortSubmittingRef.current = false;
+                    effortActiveIndexRef.current = null;
+                    if (!accepted) {
+                        queue.length = 0;
+                        setDraft(-1);
+                        setPendingIndex(-1);
+                        return;
+                    }
+                    drainEffortQueue();
                 });
             };
+
+            const enqueueEffort = (nextIndex) => {
+                const nextEffort = levels[nextIndex]?.id;
+                if (nextEffort === undefined) return;
+
+                const queue = queuedEffortIndexRef.current;
+                const lastQueuedIndex = queue[queue.length - 1];
+                if (nextIndex === effortActiveIndexRef.current || nextIndex === lastQueuedIndex) {
+                    setDraft(nextIndex);
+                    setPendingIndex(nextIndex);
+                    return;
+                }
+                if (queue.length === 0 && !effortSubmittingRef.current && nextEffort === currentEffort) {
+                    setDraft(-1);
+                    setPendingIndex(-1);
+                    return;
+                }
+
+                setDraft(nextIndex);
+                setPendingIndex(nextIndex);
+                queue.push(nextIndex);
+                if (!busy && !effortSubmittingRef.current) drainEffortQueue();
+            };
+
+            const updateDraft = (event) => {
+                const nextIndex = Number(event.currentTarget.value);
+                if (Number.isFinite(nextIndex) && nextIndex >= 0) enqueueEffort(nextIndex);
+            };
+
+            react.useEffect(() => {
+                if (!busy && !effortSubmittingRef.current) drainEffortQueue();
+            }, [busy]);
 
             react.useEffect(() => {
                 if (pendingIndex < 0) return;
@@ -1067,12 +1110,6 @@ code {
                     setPendingIndex(-1);
                 }
             }, [currentIndex, pendingIndex]);
-
-            const onSliderKeyUp = (event) => {
-                if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "Home" || event.key === "End") {
-                    commitEffort(event);
-                }
-            };
 
             // Secondary menu: model picker, shown when the model row is clicked.
             if (state.groups.length === 0 && state.status !== "loading" && !initialLoading) {
@@ -1140,8 +1177,8 @@ code {
                     ));
 
             // Always-visible slider block below the model row.
-            // Dragging updates only the local draft (fluid); the selection is
-            // committed on release / keyboard confirm.
+            // The local display follows movement while each distinct level is
+            // committed through the FIFO queue.
             const displayedIndex = draft >= 0 ? draft : pendingIndex >= 0 ? pendingIndex : currentIndex;
             const displayedLevel = levels[displayedIndex];
             const maxIndex = levels.length - 1;
@@ -1273,7 +1310,7 @@ code {
                             levels.map((level, index) => react.createElement("span", {
                                 key: level.id,
                                 className: index <= displayedIndex ? "dsh-es-sliderTick dsh-es-sliderTickActive" : "dsh-es-sliderTick",
-                                 style: { "--tick-delay": `${(-index * .16).toFixed(2)}s` }
+                                style: { "--tick-delay": `${(-index * .16).toFixed(2)}s` }
                             }))
                         ),
                         react.createElement("input", {
@@ -1286,9 +1323,7 @@ code {
                             disabled: locked,
                             onInput: updateDraft,
                             onChange: updateDraft,
-                            onMouseUp: commitEffort,
-                            onTouchEnd: commitEffort,
-                            onKeyUp: onSliderKeyUp,
+                            onKeyUp: updateDraft,
                             "aria-label": "推理强度"
                         })
                     ),
@@ -1341,7 +1376,7 @@ code {
                     : react.createElement(
                         react.Fragment,
                         null,
-                                                 react.createElement("div", { className: "dsh-es-menuDivider" }),
+                        react.createElement("div", { className: "dsh-es-menuDivider" }),
                         slider
                     )
             ) : null;
